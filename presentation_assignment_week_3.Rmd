@@ -1,0 +1,75 @@
+---
+title: "Presentation assignment"
+author: "Juan Flores"
+date: "September 11, 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(plotly)
+```
+
+## Plot with Plotly package
+
+This document is to present a plot with some features, using the plotly package in R.
+A population health asssessment for the states of California, Georgia, Illinois, New York, Texas, and Washington.
+Using random statistics and displaying the information in a plot.
+
+## Data generation
+
+Creating random statistics about health (sick people) for 6 states in the United States.
+
+```{r creating random health data, results='hide'}
+
+StatesHealth <- data.frame(
+  State = c("New York","California","Texas",
+            "Washington","Illinois","Georgia"),
+  Population = c(8538000,39250000,27860000,
+                 7288000,12800000,10310000),
+  PeopleSickPercentage = c(runif(6))*10)
+  PopulationSick <- round(
+    c(StatesHealth$Population*
+        StatesHealth$PeopleSickPercentage/100),0)
+  StatesHealth$PopulationSick <- PopulationSick
+  TotalPopulation <- sum(StatesHealth$Population)
+  
+```
+
+```{r sickness importance, echo=FALSE,results='hide'}
+
+Red <- 1000000
+Yellow <- 300000
+Colorfun <- function(PopulationSick){
+    if(PopulationSick >= Red) {
+      print("> 1,000,000")
+    }
+    else {
+      if(PopulationSick >= Yellow){
+        print("< 1,000,000 & > 500,000")
+      }
+        else {
+        print("< 300,000")
+        }
+    }
+}
+StatesHealth$ColorOfBar <- sapply(PopulationSick,"Colorfun")
+```
+
+## Results
+
+Table with the data that will be used for the plot.
+
+```{r Final table}
+
+StatesHealth
+```
+
+## Plot - Sick Population
+
+#### Date - `r Sys.Date()`
+
+```{r plot, echo=FALSE}
+p <- plot_ly(data = StatesHealth,x=~State, y=~PopulationSick, type = "bar",color = ~ColorOfBar)
+p
+```
